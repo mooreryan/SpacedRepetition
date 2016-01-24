@@ -18,34 +18,34 @@
 class Card
   include Const
 
-  attr_accessor :efactor, :interval, :review_cycle_num, :total_reviews
+  attr_accessor :efactor, :interval, :review_step, :num_reviews
 
   def initialize
     @efactor = 2.5
-    @total_reviews = 0
-    @review_cycle_num = 0
+    @num_reviews = 0
+    @review_step = 0
     @interval = update_interval
   end
 
   def update ease
     abort "ASSERTION ERROR" unless ease >= AGAIN && ease <= EASY
 
-    self.total_reviews += 1
+    self.num_reviews += 1
 
     $stderr.print "Old interval #{self.interval}, "
 
     if ease == AGAIN
-      self.review_cycle_num = 0
+      self.review_step = 0
     else
-      self.review_cycle_num += 1
+      self.review_step += 1
       update_efactor ease
     end
 
     update_interval
 
-    $stderr.printf "Total reviews: %s, Review cycle: %s, Ease: %s, New Interval: %s\n",
-                   self.total_reviews,
-                   self.review_cycle_num,
+    $stderr.printf "Total reviews: %s, Review step: %s, Ease: %s, New Interval: %s\n",
+                   self.num_reviews,
+                   self.review_step,
                    EASE[ease],
                    self.interval
   end
@@ -63,19 +63,19 @@ class Card
     end
   end
 
-  def next_interval review_cycle_num
-    abort "ASSERTION ERROR" unless review_cycle_num >= 0
+  def next_interval review_step
+    abort "ASSERTION ERROR" unless review_step >= 0
 
-    if review_cycle_num.zero?
+    if review_step.zero?
       0
-    elsif review_cycle_num == 1
+    elsif review_step == 1
       1
     else
-      next_interval(review_cycle_num-1) * self.efactor
+      next_interval(review_step-1) * self.efactor
     end
   end
 
   def update_interval
-    self.interval = next_interval self.review_cycle_num
+    self.interval = next_interval self.review_step
   end
 end
