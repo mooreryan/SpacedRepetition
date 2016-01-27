@@ -50,7 +50,7 @@ class Card
                    self.interval
   end
 
-  private
+
 
   def update_efactor ease
     new_efactor =
